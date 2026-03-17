@@ -1,23 +1,30 @@
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Main {
     public static void main(String[] args) {
+        ScheduleManager sm = new ScheduleManager();
 
-        // Test saving an appointment
-        Appointment a = new Appointment(
-                1, 1, 2,
-                java.time.LocalDate.of(2026, 3, 20),
-                java.time.LocalTime.of(10, 0),
-                java.time.LocalTime.of(11, 0)
+        // Test login
+        User user = sm.login("admin", "admin123");
+        System.out.println("Logged in as: " + (user != null ? user.getUsername() : "failed"));
+
+        // Test booking
+        boolean booked = sm.bookAppointment(
+                1, 2,
+                LocalDate.of(2026, 3, 25),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0)
         );
-        FileManager.saveAppointment(a);
-        System.out.println("Saved appointment: " + a);
+        System.out.println("Booking 1: " + booked);
 
-        // Test loading it back
-        List<Appointment> loaded = FileManager.loadAppointments();
-        System.out.println("Loaded " + loaded.size() + " appointment(s)");
-        for (Appointment appt : loaded) {
-            System.out.println(appt);
-        }
+        // Test conflict detection — same therapist, same slot
+        boolean blocked = sm.bookAppointment(
+                1, 2,
+                LocalDate.of(2026, 3, 25),
+                LocalTime.of(10, 30),
+                LocalTime.of(11, 30)
+        );
+        System.out.println("Booking 2 (should be blocked): " + blocked);
     }
 }

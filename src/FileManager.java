@@ -6,9 +6,9 @@ import java.util.List;
 
 public class FileManager {
 
-    private static final String USERS_FILE = "src/users.csv";
-    private static final String APPOINTMENTS_FILE = "src/appointments.csv";
-    private static final String AVAILABILITY_FILE = "src/availability.csv";
+    private static final String USERS_FILE = "users.csv";
+    private static final String APPOINTMENTS_FILE = "appointments.csv";
+    private static final String AVAILABILITY_FILE = "availability.csv";
 
     // ─── USERS ───────────────────────────────────────────
 

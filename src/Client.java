@@ -21,4 +21,5 @@ public class Client extends User {
     public String toString() {
         return getUserId() + "," + getUsername() + "," + getPassword() + ",client," + contactNumber;
     }
+    public int getClientId() { return getUserId(); }
 }

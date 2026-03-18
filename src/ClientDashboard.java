@@ -91,9 +91,17 @@ public class ClientDashboard extends JFrame {
         JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        panel.add(new JLabel("Therapist ID:"));
-        JTextField therapistField = new JTextField();
-        panel.add(therapistField);
+        panel.add(new JLabel("Therapist:"));
+        List<User> allUsers = scheduleManager.getAllUsers();
+        JComboBox<String> therapistCombo = new JComboBox<>();
+        for (User u : allUsers) {
+            if (u.getRole().equals("therapist")) {
+                therapistCombo.addItem(u.getUserId() + " - " + u.getUsername());
+            }
+        }
+        panel.add(therapistCombo);
+
+
 
         panel.add(new JLabel("Date (YYYY-MM-DD):"));
         JTextField dateField = new JTextField();
@@ -117,7 +125,9 @@ public class ClientDashboard extends JFrame {
 
         confirmButton.addActionListener(e -> {
             try {
-                int therapistId = Integer.parseInt(therapistField.getText().trim());
+                int therapistId = Integer.parseInt(
+                        therapistCombo.getSelectedItem().toString().split(" - ")[0]
+                );
                 LocalDate date = LocalDate.parse(dateField.getText().trim());
                 LocalTime start = LocalTime.parse(startField.getText().trim());
                 LocalTime end = LocalTime.parse(endField.getText().trim());
@@ -128,7 +138,38 @@ public class ClientDashboard extends JFrame {
                             "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                if (end.isBefore(start) || end.equals(start)) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "End time must be after start time.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
+                if (start.plusMinutes(30).isAfter(end)) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Session must be at least 30 minutes long.",
+                            "Invalid Duration", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+               /* if (!scheduleManager.therapistExists(therapistId)) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Therapist not found. Please enter a valid Therapist ID.",
+                            "Invalid Therapist", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }*/
+                if (date.isBefore(LocalDate.now())) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Please select a future date.",
+                            "Invalid Date", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (date.isEqual(LocalDate.now()) && start.isBefore(LocalTime.now())) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Cannot book a time that has already passed today.",
+                            "Invalid Time", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 boolean success = scheduleManager.bookAppointment(
                         therapistId, client.getClientId(), date, start, end
                 );

@@ -71,7 +71,14 @@ public class ScheduleManager {
         System.out.println("Appointment not found.");
         return false;
     }
-
+    public boolean therapistExists(int therapistId) {
+        for (User u : users) {
+            if (u.getUserId() == therapistId && u.getRole().equals("therapist")) {
+                return true;
+            }
+        }
+        return false;
+    }
     // ─── GET APPOINTMENTS ─────────────────────────────────
 
     public List<Appointment> getAppointmentsForClient(int clientId) {
@@ -126,5 +133,8 @@ public class ScheduleManager {
             if (a.getAppointmentId() > maxId) maxId = a.getAppointmentId();
         }
         return maxId + 1;
+    }
+    public List<User> getAllUsers() {
+        return users;
     }
 }
